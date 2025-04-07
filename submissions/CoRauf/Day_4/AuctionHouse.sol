@@ -9,31 +9,31 @@ contract AuctionHouse{
     uint public auctionEndTime;
     address private highestBidder;
     bool public ended;
-    uint256 public hightestBid;
+    uint256 public highestBid;
 
     mapping(address => uint256) public bids;
     address[] public bidders;
 
 
-    constructors(string memory _item, uint256 _bidingTime){
+    constructor(string memory _item, uint256 _bidingTime){
         owner = msg.sender;
         item = _item;
         auctionEndTime = block.timestamp + _bidingTime;
 
     }
 
-    function bid(uint256 _amount) external {
+    function bid(uint256 amount) external {
         require(block.timestamp < auctionEndTime, "Auction has ended");
-        require(_amount > 0, "Bid amount must be graeter");
-        require(_amount > bids[msg.sender], "Bid must be higher than your previous");
+        require(amount > 0, "Bid amount must be graeter");
+        require(amount > bids[msg.sender], "Bid must be higher than your previous");
         
         if (bids[msg.sender] == 0){
             bidders.push(msg.sender);
         }
 
         bids[msg.sender] = amount;
-        if(amount > hightestBid){
-            hightestBid = amount;
+        if(amount > highestBid){
+            highestBid = amount;
             highestBidder = msg.sender;
         }
     }
@@ -50,7 +50,7 @@ contract AuctionHouse{
         return(highestBidder, highestBid);
     }
 
-    function getAllBidders() external view returns(address memory){
-        returns bidders;
+    function getAllBidders() external view returns(address[] memory){
+        return bidders;
     }
 } 
