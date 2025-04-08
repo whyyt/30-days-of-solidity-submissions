@@ -5,6 +5,15 @@ contract TipJar {
   
  address public creator;
  
+ struct TipInfo {
+    uint256 ethAmount;
+    string currency;
+    uint256 originalAmount; // e.g., $5, €3
+}
+mapping(address => TipInfo[]) public tips;
+
+event MultiCurrencyDonation(address indexed donor, uint256 ethAmount, Currency currency, uint256 originalAmount);
+
  constructor() {
     creator = msg.sender;
  }
@@ -14,12 +23,19 @@ contract TipJar {
     _;
  }
  
- event Donation(address indexed donor,uint256 amount);
-  
- function buyMeCoffe () public payable {
+ function buyMeCoffe (string memory currency, uint256 originalAmount) public payable {
     require(msg.value > 0, "You can't donate 0 eth, Have some dignity");
+    require(originalAmount > 0, "Original amount must be > 0");
+
+    TipInfo memory tip = TipInfo({
+        ethAmount: msg.value,
+        currency: currency,
+        originalAmount: originalAmount
+    });
+
+    tips[msg.sender].push(tip);
+    emit MultiCurrencyDonation(msg.sender, msg.value, currency, originalAmount);
     
-    emit Donation(msg.sender, msg.value);
  }
  
  function withdrawAllMoney () public onlyCreator {
