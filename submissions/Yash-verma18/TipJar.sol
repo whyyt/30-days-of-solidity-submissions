@@ -12,7 +12,7 @@ contract TipJar {
 }
 mapping(address => TipInfo[]) public tips;
 
-event MultiCurrencyDonation(address indexed donor, uint256 ethAmount, Currency currency, uint256 originalAmount);
+event MultiCurrencyDonation(address indexed donor, uint256 ethAmount, string currency, uint256 originalAmount);
 
  constructor() {
     creator = msg.sender;
