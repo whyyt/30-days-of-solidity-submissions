@@ -64,7 +64,7 @@ contract MyFirstToekn {
      // Function to approve another address to spend tokens on behalf of the caller
     function approval(address _spender, uint256 _value) public returns(bool) {
         require(_balances[msg.sender] >= _value, "Bal!");
-        _allowances[_spender][msg.sender] = _value;
+        _allowances[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value) ;
         return true;
     }
