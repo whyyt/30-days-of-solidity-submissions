@@ -20,6 +20,8 @@ contract MyFirstToken {
         balanceOf[msg.sender] = totalSupply;
         name = _tokenName;
         symbol = _symbol;
+
+         emit Transfer(address(0), msg.sender, totalSupply);
     }
 
     function transfer (address _to, uint256 _amount) public {
