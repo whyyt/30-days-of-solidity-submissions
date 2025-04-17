@@ -4,6 +4,7 @@ pragma solidity ^0.8.18;
 
 import "./MyFirstToken.sol";
 
+// This contract is a pre-order token sale contract that allows users to purchase tokens before the official launch of the token.
 contract PreOrderTokens is MyFirstToken {
 
     uint256 public tokenPrice;
@@ -16,9 +17,12 @@ contract PreOrderTokens is MyFirstToken {
     bool public finalised = false;
     bool private initialTransferDone = false;
 
+    // Events to log token purchases and sale finalisation
     event TokensPurchased(address indexed buyer, uint256 etherAmount, uint256 tokenAmount);
     event SaleFinalised(uint256 totalRaised, uint256 tokensSold);
 
+
+    // Constructor to initialize the token sale parameters
     constructor(
     uint256 _initialSupply, 
     uint256 _tokenPrice,
@@ -38,10 +42,12 @@ contract PreOrderTokens is MyFirstToken {
         initialTransferDone = true;
     }
 
+    // Function to check if the sale is active
     function isSaleActive() public view returns(bool) {
         return (!finalised && block.timestamp >= saleStartTime && block.timestamp <= saleEndTime);
     }
 
+    // Function to buy tokens during the sale
     function buyToken() public payable {
         require(isSaleActive(), "Sale is not active now");
         require(msg.value >= minPurchase, "Out of Range");
@@ -54,14 +60,16 @@ contract PreOrderTokens is MyFirstToken {
         _transfer(address(this), msg.sender, tokenAmount);
         emit TokensPurchased(msg.sender, msg.value, tokenAmount);
     }
-
+  
+    // Function to transfer tokens, with restrictions based on the sale status
     function transfer(address _to, uint256 _value) public override returns (bool) {
         if (!finalised && msg.sender != address(this) && initialTransferDone) {
             require(false, "token are locked until is finalised");
         }
         return super.transfer(_to, _value);
     }
-
+  
+    // Function to transfer tokens from one address to another, with restrictions based on the sale status
     function transferFrom (address _from, address _to, uint256 _value) public override returns (bool) {
         if (!finalised && _from != address(this)) {
             require(false, "token are locked until is finalised");
@@ -69,6 +77,7 @@ contract PreOrderTokens is MyFirstToken {
         return super.transferFrom(_from, _to, _value);
     }
 
+    // Function to finalise the sale, transferring the raised funds to the project owner
     function finaliseSale() public payable {
         require (msg.sender == projectOwner, "Only owner can call");
         require(!finalised, "Already finalised");
@@ -81,6 +90,7 @@ contract PreOrderTokens is MyFirstToken {
         emit SaleFinalised(totalRaised, tokensSold);
    }
 
+    // Function to withdraw funds from the contract, only callable by the project owner
     function timeRemaining() public view returns (uint256) {
     if (block.timestamp >= saleEndTime) {
         return 0;
@@ -92,6 +102,8 @@ contract PreOrderTokens is MyFirstToken {
         return balanceOf[address(this)];
     }
 
+
+    // receive function to allow users to buy tokens by sending Ether directly to the contract
     receive() external payable {
         buyToken();
     }
