@@ -22,7 +22,7 @@ contract PluginStore {
 
     // function to get player profile
     function getProfile(address user) external view returns(string memory, string memory) {
-        PlayerProfile memory profile = profiles[user];
+        PlayerProfile memory profile = profiles[user];                  // get player profile
         return (profile.name, profile.avatar);
     }
 
