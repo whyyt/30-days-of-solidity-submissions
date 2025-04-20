@@ -46,7 +46,7 @@ contract PluginStore {
         require (success, "plugin execution failed");                                    // check if plugin execution was successful
     }
 
-    // function to g
+    // function to get plugin 
     function runPluginView(string memory key, string memory functionSignature, address user) external view returns (string memory) {
         address plugin = plugins[key];                                                   // get plugin address
         require (plugin != address(0), "No plgin found");                                // check if plugin address is valid
