@@ -15,8 +15,13 @@ contract AutomatedMarketMaker is ERC20 {
 
     address public owner;
 
+    // event to log liquidity addition
     event LiquidityAdded(address indexed provider, uint256 amountA, uint256 amountB, uint256 liquidity);
+
+    // event to log liquidity removal
     event LiquidityRemoved(address indexed provider, uint256 amountA, uint256 amountB, uint256 liquidity);
+
+    // event to log token swaps
     event TokensSwapped(address indexed trader, address tokenIn, uint256 amountIn, address tokenOut, uint256 amountOut);
 
     constructor(address _tokenA, address _tokenB, string memory _name, string memory _symbol) ERC20(_name, _symbol) {
@@ -137,4 +142,3 @@ contract AutomatedMarketMaker is ERC20 {
         }
     }
 }
-
