@@ -72,6 +72,7 @@ contract EventEntry {
         return ecrecover (_ethSignedMessageHash, v, r, s);
     }
 
+    // function to check in an attendee
     function checkIn(bytes memory _signature) external {
 
         require (isEventActive, "Event is not active");
