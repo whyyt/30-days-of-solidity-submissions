@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 contract AdminOnly {
     // State variables
     address public owner;
-    uint256 public treasureAmount;
+    uint256 private treasureAmount;
     mapping(address => uint256) public withdrawalAllowance;
     mapping(address => bool) public hasWithdrawn;
     
