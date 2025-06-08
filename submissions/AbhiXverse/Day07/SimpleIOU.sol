@@ -39,7 +39,7 @@ contract SimpleIOU {
         return debts[msg.sender][friend];
      } 
 
-     // this checks how much Eth a user stored in the contract 
+     // this checks how much Eth a user stored in the contract
      function checkbalance(address user) public view returns (uint256) {
         return balances[user];
      }
