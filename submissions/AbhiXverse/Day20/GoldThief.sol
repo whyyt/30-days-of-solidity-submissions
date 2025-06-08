@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.18;
 
+// interface for the Vault contract
 interface IVault {
 
     function deposit() external payable;
