@@ -55,7 +55,7 @@ contract SmartCalculator {
         return calculator.Multi(x, y);
     }
 
-    // function to get the  of two numbers
+    // function to get the  of two number
     function getQuotient(uint256 x, uint256 y) public view returns (uint256) {
         SimpleCalculator calculator = SimpleCalculator(simpleCalculatorAddress);
         return calculator.Div(x, y);
