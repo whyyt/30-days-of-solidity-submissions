@@ -16,7 +16,7 @@ contract SimpleIOU {
         balances[msg.sender] += msg.value;
     }
 
-    // function for borrowing Eth from your friend 
+    // function for borrowing Ether from your friend 
     function borrow(address friend, uint256 amount) public {
         require(amount > 0, "amount should be > 0");
         require(balances[friend] > amount, "friend doesn't have enough balance");
