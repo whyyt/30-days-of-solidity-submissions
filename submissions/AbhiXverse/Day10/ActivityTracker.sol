@@ -12,7 +12,7 @@ contract ActivityTracker {
 
     struct WorkoutActivity {
         string ActivityType;
-        uint256 duration;  // in seconds
+        uint256 duration;  // in sec's
         uint256 distance;
         uint256 timestamp;
     }
