@@ -42,7 +42,7 @@ contract AuctionHouse {
         auctionEnded = true;
     }
 
-    // function to get the auction details 
+    // function to get the auction details
     function getAuctionDetails() public view returns(address _highestBidder, uint256 _highestBid, uint256 _timeLeft, bool _ended) {
         uint256 timeLeft = endTime > block.timestamp ? endTime - block.timestamp :0;
         bool ended = auctionEnded || block.timestamp >= endTime;
