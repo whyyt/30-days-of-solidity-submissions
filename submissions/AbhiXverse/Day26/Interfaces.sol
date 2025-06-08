@@ -19,6 +19,6 @@ interface IERC721 is IERC165 {
 }
 
 interface IERC2981 is IERC165 {
-    // Returns royalty info for NFT sales
+    // returns royalty info for NFT sales
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount);
 }
