@@ -13,7 +13,7 @@ contract PollStation {
     // tracks if the address has already voted 
     mapping(address => bool) public AlreadyVoted;
 
-    // total votes counts 
+    // Total votes counts 
     uint256 public totalVotes;
 
     // function to vote for a candidate 
@@ -30,5 +30,6 @@ contract PollStation {
     }
 
 }
+
 
 
