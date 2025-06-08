@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.20;
 
+// interfaces for ERC721 standard
 interface ERC721 {
     event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId); // Emitted on NFT transfer
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId); // Emitted when token approval changes
