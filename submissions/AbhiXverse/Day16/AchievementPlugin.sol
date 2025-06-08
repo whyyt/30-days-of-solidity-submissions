@@ -4,7 +4,7 @@ pragma solidity ^0.8.18;
 
 contract AchievementPlugin {
  
-    // mapping to store player achievement
+    // mapping to store player achievements
     mapping (address => string) public latestAchievement;
 
     // function to set player achievement
