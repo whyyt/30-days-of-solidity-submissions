@@ -17,6 +17,6 @@ contract SaveMyName01 {
     }
 
     function getDetails() public view returns (string memory, string memory, bool) {
-        return (name, bio, status);       // get the details of the user 
+        return (name, bio, status);       // get the details of the user
     }
 }
