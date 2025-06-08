@@ -4,8 +4,8 @@ pragma solidity ^0.8.18;
 
 contract TipJar {
 
-    address public owner;                   // Owner of the contract
-    uint256 public totalTips;               // total tips in Ether received
+    address public owner;                  // Owner of the contract
+    uint256 public totalTips;              // total tips in Ether received
 
     uint256 EthToUSD = 1450;                // exchange rate for ETH to USD 
     uint256 EthToINR = 126000;              // exchange rate for ETH to INR 
