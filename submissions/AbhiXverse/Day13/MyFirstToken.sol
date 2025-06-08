@@ -11,7 +11,7 @@ contract MyFirstToken {
     uint256 public totalSupply;
 
 
-    // Mappings to track balances and allowances
+    // Mapping to track balances and allowances
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
