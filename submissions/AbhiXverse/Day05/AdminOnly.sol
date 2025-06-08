@@ -30,7 +30,7 @@ contract AdminOnly {
         allowed[user] = amount;
     }
 
-    // function to get the trasure if allowed and havn't taken already 
+    // function to get the trasure if allowed and haven't taken already 
     function gettreasure() public {
         require(allowed[msg.sender] > 0, "Not allowed to get treasure");
         require(!alreadytaken[msg.sender], "already get the treasure");
