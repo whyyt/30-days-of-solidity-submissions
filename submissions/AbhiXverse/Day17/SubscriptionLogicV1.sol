@@ -11,6 +11,7 @@ contract SubsscriptionLogicV1 is SubscriptionStorageLayout {
         planDuration[planId] = duration;
     }
 
+    // Function to pause a subscription
     function subscribe(uint8 planId) external payable {
         require(planPrices[planId] > 0," Invalid plan ");
         require(msg.value >= planPrices[planId], "Insufficient funds");
