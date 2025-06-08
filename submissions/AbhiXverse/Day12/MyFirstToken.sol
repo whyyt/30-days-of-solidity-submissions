@@ -27,7 +27,7 @@ contract MyFirstToken {
         emit Transfer(address(0), msg.sender, _initialSupply); 
     }
 
-    // Internal function to handle the transfer of tokens
+    // internal function to handle the transfer of tokens
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != address(0), "Cannot transfer to 0 address");
         balanceOf[_from] -= _value;
