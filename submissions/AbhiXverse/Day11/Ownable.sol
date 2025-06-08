@@ -6,6 +6,7 @@ contract Ownable {
 
     address public owner;
 
+    // Event to log ownership transfer
     event OwnershipTransfer(address indexed previousOwner, address newOwner);
 
     constructor() {
