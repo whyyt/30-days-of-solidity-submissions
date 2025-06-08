@@ -4,6 +4,7 @@ pragma solidity ^0.8.18;
 
 import "./IDepositBox.sol";
 
+// BaseDepositBox is an abstract contract that implements the IDepositBox interface.
 abstract contract BaseDepositBox is IDepositBox {
 
     address internal owner;
