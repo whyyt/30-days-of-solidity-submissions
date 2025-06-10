@@ -72,5 +72,27 @@ contract TipJar{
         totalTipsRecieved = 0;
     }
 
+    function transferOwnership(address _newOwner) public  onlyOwner{
+        require(_newOwner != address(0),"Invalid address");
+        owner = _newOwner;
+
+    }
+
+    function getSupportedCurrencies() public view  returns (string[] memory){
+        return supportedCurrencies;
+    }
+
+    function getContractBalance() public view returns(uint256){
+        return address(this).balance;
+    }
+
+    function getTipperContribution(address _tipper) public view returns(uint256){
+        return tipsPerPerson[_tipper];
+    }
+
+    function getTipsInCurrency(string memory _currencyCode) public  view returns(uint256){
+        return tipsPerCurrency[_currencyCode];
+    }
+
 
 }
