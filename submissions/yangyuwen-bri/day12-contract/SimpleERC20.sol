@@ -20,7 +20,7 @@ contract SimpleERC20{
         emit Transfer(address(0), msg.sender, totalSupply); //代币并非来自其他用户，而是凭空产生的
     }
 
-    function transfer(address _to, uint256 _value) public returns(bool){
+    function transfer(address _to, uint256 _value) public virtual returns(bool){
         require(balance0f[msg.sender] >= _value, "not enough balance.");
         _transfer(msg.sender, _to, _value);
         return true;
@@ -32,7 +32,7 @@ contract SimpleERC20{
         return(true);
     }
     
-    function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
+    function transferFrom(address _from, address _to, uint256 _value) public virtual returns(bool){
         require(balance0f[_from] >= _value, "not enough balance.");
         require(allowance[_from][msg.sender] >= _value, "allowance too low.");
 
