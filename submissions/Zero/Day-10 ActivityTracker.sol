@@ -17,8 +17,8 @@ contract SimpleFitnessTracker {
         uint256 distance;    // in meters
         uint256 timestamp;   
     }
-    
-   
+
+     // 链接用户信息结构和锻炼内容结构
     mapping(address => UserProfile) public userProfiles;
     mapping(address => WorkoutActivity[]) private workoutHistory;
     mapping(address => uint256) public totalWorkouts;
