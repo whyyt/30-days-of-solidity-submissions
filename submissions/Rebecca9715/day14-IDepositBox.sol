@@ -6,3 +6,5 @@ interface IDepositBox {
     function getBoxType() external pure returns (string memory);
     function getDepositTime() external view returns (uint256);
 }
+
+// 相当于一个目录
