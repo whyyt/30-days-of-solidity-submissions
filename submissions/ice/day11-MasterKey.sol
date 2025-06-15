@@ -12,8 +12,6 @@ contract Ownable {
     // 事件：所有权转移
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     
-
-    
     /**
      * @dev 构造函数，设置合约的初始所有者为部署者
      */
@@ -36,8 +34,6 @@ contract Ownable {
         require(_owner == msg.sender, "Ownable: caller is not the owner");
         _;
     }
-    
-
     
     /**
      * @dev 将所有权转移给新的地址
@@ -78,13 +74,6 @@ contract VaultMaster is Ownable {
     
     // 事件：提取
     event Withdrawal(address indexed owner, uint256 amount, uint256 timestamp);
-    
-
-    
-    // 事件：金库清空
-    event VaultEmptied(address indexed owner, uint256 amount);
-    
-
     
     /**
      * @dev 构造函数
@@ -138,18 +127,6 @@ contract VaultMaster is Ownable {
         payable(owner()).transfer(balance);
         emit Withdrawal(owner(), balance, block.timestamp);
     }
-    
-    /**
-     * @dev 紧急情况下清空金库（只有所有者）
-     */
-    function emergencyWithdraw() external onlyOwner {
-        uint256 balance = address(this).balance;
-        if (balance > 0) {
-            payable(owner()).transfer(balance);
-            emit VaultEmptied(owner(), balance);
-        }
-    }
-    
 
     
     /**
