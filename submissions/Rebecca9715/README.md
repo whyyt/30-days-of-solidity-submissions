@@ -74,3 +74,7 @@ Day10
 Day11
 1. 实际上是完成了一个对ownalbe的继承：contract VaultMaster is Ownable，但是这里可以进行一些改动
 2. 其他操作较为简单，基本上是存取款操作
+
+day13
+1. 这里的constructor继承了前一天的mytoken函数，因此包括了之前的声明，需要更改两个函数为virtual
+2. **目前还存在疑问：token和金额之间的关系是什么？为什么会每次购买token获取的金额不一样且没有什么规律**
