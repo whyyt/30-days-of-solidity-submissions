@@ -35,18 +35,25 @@ constract EtherPiggyBank{
         return members;
     }
 
+/* deposit & withdraw amount
+    function deposit(uint _amount) public onlyRegisteredMember{
+        require(_amount>0,"Invalid amount");
+        balance[msg.sender]+=_amount;
+    }
+
+    function withdraw(uint _amount) public onlyRegisteredMember{
+        require(_amount>0,"Invalid amount");
+        require(_amount<=balance[msg.sender],"Your balance is insufficient");
+        balance[msg.sender]-=_amount;
+    }
+*/
+
     function depositAmountEther() public payable onlyRegisteredMember{  
         require(msg.value > 0, "Invalid amount");
-        balance[msg.sender] = balance[msg.sender]+msg.value;
+        balance[msg.sender] += msg.value;
    
     }
     
-    function withdrawAmount(uint256 _amount) public onlyRegisteredMember{
-        require(_amount > 0, "Invalid amount");
-        require(balance[msg.sender] >= _amount, "Insufficient balance");
-        balance[msg.sender] = balance[msg.sender]-_amount;
-   
-    }
 
     function getBalance(address _member) public view returns (uint256){
         require(_member != address(0), "Invalid address");
