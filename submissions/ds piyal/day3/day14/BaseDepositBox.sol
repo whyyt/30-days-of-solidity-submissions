@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./14.IDepositBox.sol";
+import "./IDepositBox.sol";
 
 abstract contract BaseDepositBox is IDepositBox{
     address private owner;
