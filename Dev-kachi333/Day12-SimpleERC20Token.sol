@@ -48,9 +48,4 @@ contract SimpleToken {
     }
 
 
-
-
-
-
-
 }
