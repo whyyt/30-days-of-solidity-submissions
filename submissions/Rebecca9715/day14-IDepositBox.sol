@@ -1,3 +1,6 @@
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0; 
+
 interface IDepositBox {
     function getOwner() external view returns (address);
     function transferOwnership(address newOwner) external;
@@ -7,4 +10,4 @@ interface IDepositBox {
     function getDepositTime() external view returns (uint256);
 }
 
-// 相当于一个目录
+// 所有与其相关的box或vault都需要遵循这个interface

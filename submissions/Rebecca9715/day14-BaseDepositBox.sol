@@ -3,11 +3,16 @@ pragma solidity ^0.8.0;
 
 import "./day14-IDepositBox.sol";
 
+// 定义一个抽象合约，virtual
 abstract contract BaseDepositBox is IDepositBox {
+    // 所有想要获取的人需要走一段程序：public getter function，也就是interface提供的external function
+    // 存款人的相关profile
     address private owner;
+    // secret为一段私密的需要保存的字符串
     string private secret;
     uint256 private depositTime;
 
+// 定义事件如更改owner、secret存储，以及定义modifier器
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event SecretStored(address indexed owner);
 
@@ -16,6 +21,7 @@ abstract contract BaseDepositBox is IDepositBox {
         _;
     }
 
+    // 部署时定义当前时间为取钱时间
     constructor() {
         owner = msg.sender;
         depositTime = block.timestamp;

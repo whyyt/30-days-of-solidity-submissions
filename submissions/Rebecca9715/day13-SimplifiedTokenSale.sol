@@ -18,6 +18,7 @@ contract PreOrderToken is MyToken {
     event TokensPurchased(address indexed buyer, uint256 etherAmount, uint256 tokenAmount);
     event SaleFinalized(uint256 totalRaised, uint256 totalTokensSold);
 
+    // 传入的时候需要传下面的参数，注意时间留长一些，单位为秒
     constructor( 
         uint256 _intitialSupply,
         uint256 _tokenPrice,
@@ -98,4 +99,4 @@ contract PreOrderToken is MyToken {
 
 // day13
 // 1. 这里的constructor继承了前一天的mytoken函数，因此包括了之前的声明，需要更改两个函数为virtual
-// 2. 
+// 2. 目前还存在疑问：token和金额之间的关系是什么？为什么会每次购买token获取的金额不一样且没有什么规律
