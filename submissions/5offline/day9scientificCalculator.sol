@@ -6,6 +6,7 @@ pragma solidity^0.8.0;
     //写两份简单合同然后把它们联合起来，调用另一个合约里的函数来做事，先写子合同
     //像是app调用另一个app，calculator是主合同，进行加减乘除
     //将进行的运算function：幂，开平方根
+    
     function power(uint256 base, uint256 exponent)public pure returns(uint256){
         //pure像view，关键词,pure 函数 —「看都不看，只算不存」
         if(exponent ==0)return 1;

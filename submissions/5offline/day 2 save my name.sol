@@ -16,11 +16,14 @@ function add(string memory _name, string memory _bio, string memory _age, string
     job=_job;
     city=_city;
 }
+//存数据
 
 function retrieve() public view returns (string memory,string memory, string memory, string memory, string memory){
     return(name,bio,age,job,city);
 
 }
+//取数据
+
 
 function saveandRetrieve(string memory _name, string memory _bio)public returns(string memory,string memory){
 
@@ -28,6 +31,7 @@ function saveandRetrieve(string memory _name, string memory _bio)public returns(
     bio=_bio;
     return(name,bio);
 }
+//存和取同时进行
 
 }
 

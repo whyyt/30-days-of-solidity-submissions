@@ -11,6 +11,7 @@ contract TipJar{
     address public owner;
     string[] public supportedCurrencies;
     mapping(string => uint256) conversionRates;
+    //转换汇率
     uint256 public totalTipsreceived;
     mapping(address => uint256) public tipsperperson;
     mapping(string =>uint256) public tipspercurrency;
@@ -62,6 +63,7 @@ contract TipJar{
             return ethAmount;
 
     }
+
     function tipineth()public payable {
         require(msg.value>0,"must send more than 0.");
         tipsperperson[msg.sender] +=msg.value;
@@ -75,13 +77,15 @@ contract TipJar{
         require (conversionRates[_currencyCode]>0, "currency is not supported");
         require (_amount>0, "amount must be greater than 0.");
         uint256 ethamount = converttoeth(_currencyCode, _amount);
+        //调用了上面写的function！好有趣
+    
         //把指定货币代码的钱转化为eth，变成ethamount
         require(msg.value ==ethamount,"sent eth does not match the converted amount.");
         //这行很重要，因为你给出的钱如果不等于eth通过这个函数转换的，就说明转换的不对
         tipsperperson[msg.sender] +=msg.value;
         totalTipsreceived +=msg.value;
         tipspercurrency[_currencyCode] +=msg.value;
-        //和上面一样的，因为都是付款出去，要记录钱包里钱的变化
+        //和上面一样的，因为都是付款出去，要记录钱的变化
 
     }
     function withdrawtips() public onlyowner{
