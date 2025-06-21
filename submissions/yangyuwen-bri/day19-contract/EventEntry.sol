@@ -37,9 +37,8 @@ contract EventEntry {
         emit EventStatus(_isActive);
     }
 
-    // 为嘉宾生成唯一哈希：输入嘉宾地址
-    // 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB ==> 0x3f6192c0eb59e6412ac86e3be435cc7e74440e4941a6add71454722795fcb12d
-    // ==> 0x92f6c17ccc9be3e2ef4d408a8407598dcd0412477980ba8cc92659975d101e20
+    // 为嘉宾生成唯一哈希：输入嘉宾地址，得到messageHash填入js脚本，获取signature
+    // 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
     // 0x617F2E2fD72FD9D5503197092aC168c91465E7f2
     function getMessageHash(address _attendee) public view returns(bytes32){
 
@@ -47,7 +46,7 @@ contract EventEntry {
 
     }
 
-    // 加上以太坊签名标准前缀，变成钱包签名时的格式。得到发给嘉宾的数字签名：_signature
+    // 加上以太坊签名标准前缀，变成钱包签名时的格式。
     function getEthSignedMessageHash(bytes32 _messageHash) public pure returns (bytes32) {
         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash));
     }
