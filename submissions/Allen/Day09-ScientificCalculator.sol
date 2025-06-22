@@ -13,11 +13,11 @@ contract ScientificCalculator{
     }
 
 
-    function squareRoot(uint256 number)public pure returns(uint256){
+    function squareRoot(uint256 number)public pure returns(int256){
         require(number >= 0,"Invaild number");
         if (number == 0) return 0;
         // TODO 
-        uint256 result = number / 2;
+        int256 result = number / 2;
 
         for(uint256 i ; i < 10 ; i++){
             result = (result + number / result) / 2;

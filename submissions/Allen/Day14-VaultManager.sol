@@ -65,7 +65,7 @@ contract VaultManager{
     function transferBoxOwnership(address boxAddress, address newOwner) external {
         IDepositBox box = IDepositBox(boxAddress);
         require(box.getOwner() == msg.sender, "Not the box owner");
-        // = call BaseDepositBox's transferOwnership
+        // Call BaseDepositBox's transferOwnership
         // The actual box owns the data and logic — VaultManager doesn't control it.
         // so this step ensures the box updates its own permissions.
         box.transferOwnership(newOwner);

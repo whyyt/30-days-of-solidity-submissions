@@ -73,14 +73,19 @@ contract ActivityTracker{
         uint256  _duration,
         uint256  _distance) public onlyRegistered{
 
-        WorkoutActivity memory workActivity =  WorkoutActivity({
+        // WorkoutActivity memory workActivity =  WorkoutActivity({
+        //     activityType: _activityType,
+        //     duration: _duration,
+        //     distance: _distance,
+        //     timestamp: block.timestamp
+        // });
+
+        workoutHistory[msg.sender].push({
             activityType: _activityType,
             duration: _duration,
             distance: _distance,
             timestamp: block.timestamp
         });
-
-        workoutHistory[msg.sender].push(workActivity);
         totalWorkouts[msg.sender]++;
         totalDistance[msg.sender] += _distance;
 
