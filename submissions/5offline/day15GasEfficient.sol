@@ -3,126 +3,87 @@ pragma solidity ^0.8.0;
 
 
 contract GasEfficientVoting {
-    
-    // Use uint8 for small numbers instead of uint256
-    uint8 public proposalCount;
-    
-    // Compact struct using minimal space types
-    struct Proposal {
-        bytes32 name;          // Use bytes32 instead of string to save gas
-        uint32 voteCount;      // Supports up to ~4.3 billion votes
-        uint32 startTime;      // Unix timestamp (supports dates until year 2106)
-        uint32 endTime;        // Unix timestamp
-        bool executed;         // Execution status
-    }
-    
-    // Using a mapping instead of an array for proposals is more gas efficient for access
-    mapping(uint8 => Proposal) public proposals;
-    
-    // Single-slot packed user data
-    // Each address occupies one storage slot in this mapping
-    // We pack multiple voting flags into a single uint256 for gas efficiency
-    // Each bit in the uint256 represents a vote for a specific proposal
-    mapping(address => uint256) private voterRegistry;
-    
-    // Count total voters for each proposal (optional)
-    mapping(uint8 => uint32) public proposalVoterCount;
-    
-    // Events
-    event ProposalCreated(uint8 indexed proposalId, bytes32 name);
-    event Voted(address indexed voter, uint8 indexed proposalId);
-    event ProposalExecuted(uint8 indexed proposalId);
-    
+    //太多gas费大家花不起
 
-    
-    // === Core Functions ===
-    
-    /**
-     * @dev Create a new proposal
-     * @param name The proposal name (pass as bytes32 for gas efficiency)
-     * @param duration Voting duration in seconds
-     */
-    function createProposal(bytes32 name, uint32 duration) external {
+    uint8 public proposalCount;
+    //uint更便宜，proposal也不会有很多
+     struct Proposal {
+        bytes32 name; 
+        uint32 voteCount;
+        uint32 startTime;
+        uint32 endTime; 
+        bool executed; }
+        //bytes比string便宜
+        //uint32也足够时间可以用到2106年
+        mapping(uint8 => Proposal) public proposals;
+        mapping(address => uint256) private voterRegistry;
+        //没有用嵌套mapping，把所有人的投票压缩在一个投票槽，看是否投票
+        mapping(uint8 => uint32) public proposalVoterCount;
+        //每个提案有多少人投票
+        event ProposalCreated(uint8 indexed proposalId, bytes32 name);
+        //用了bytes
+        event Voted(address indexed voter, uint8 indexed proposalId);
+        event ProposalExecuted(uint8 indexed proposalId);
+        //写索引
+
+        function createProposal(bytes32 _name, uint32 duration) external {
         require(duration > 0, "Duration must be > 0");
-        
-        // Increment counter - cheaper than .push() on an array
+        //时间要有效
         uint8 proposalId = proposalCount;
         proposalCount++;
-        
-        // Use a memory struct and then assign to storage
+        //比push更省fee
         Proposal memory newProposal = Proposal({
-            name: name,
+            name: _name,
             voteCount: 0,
             startTime: uint32(block.timestamp),
             endTime: uint32(block.timestamp) + duration,
             executed: false
+            
         });
-        
         proposals[proposalId] = newProposal;
         
-        emit ProposalCreated(proposalId, name);
+        emit ProposalCreated(proposalId, _name);
     }
-    
-    /**
-     * @dev Vote on a proposal
-     * @param proposalId The proposal ID
-     */
+    //创建提案结束
     function vote(uint8 proposalId) external {
-        // Require valid proposal
+        //写投票
         require(proposalId < proposalCount, "Invalid proposal");
-        
-        // Check proposal voting period
+        //和以前写的一样
         uint32 currentTime = uint32(block.timestamp);
-        require(currentTime >= proposals[proposalId].startTime, "Voting not started");
+        //赋予时间
+        require(currentTime >= proposals[proposalId].startTime, "Voting is not started");
         require(currentTime <= proposals[proposalId].endTime, "Voting ended");
-        
-        // Check if already voted using bit manipulation (gas efficient)
+        //时间限制
         uint256 voterData = voterRegistry[msg.sender];
         uint256 mask = 1 << proposalId;
+        //用mask来看有没有投票，bit操作，用二进制拆分的方法
         require((voterData & mask) == 0, "Already voted");
-        
-        // Record vote using bitwise OR
+
         voterRegistry[msg.sender] = voterData | mask;
-        
-        // Update proposal vote count
+        //把初始值设为1
         proposals[proposalId].voteCount++;
         proposalVoterCount[proposalId]++;
-        
+        //计数环节
         emit Voted(msg.sender, proposalId);
     }
-    
-    /**
-     * @dev Execute a proposal after voting ends
-     * @param proposalId The proposal ID
-     */
     function executeProposal(uint8 proposalId) external {
         require(proposalId < proposalCount, "Invalid proposal");
-        require(block.timestamp > proposals[proposalId].endTime, "Voting not ended");
+        require(block.timestamp > proposals[proposalId].endTime, "Voting isnot ended");
+        //时间和投票值要求
         require(!proposals[proposalId].executed, "Already executed");
-        
+        //应该是未执行的提案
         proposals[proposalId].executed = true;
-        
+        //完成上述则标记
         emit ProposalExecuted(proposalId);
-        
-        // In a real contract, execution logic would happen here
-    }
-    
-    // === View Functions ===
-    
-    /**
-     * @dev Check if an address has voted for a proposal
-     * @param voter The voter address
-     * @param proposalId The proposal ID
-     * @return True if the address has voted
-     */
-    function hasVoted(address voter, uint8 proposalId) external view returns (bool) {
+        }
+
+        function hasVoted(address voter, uint8 proposalId) external view returns (bool) {
         return (voterRegistry[voter] & (1 << proposalId)) != 0;
     }
+    //同样的mask用法
+    // 位运算遮罩（bit mask），从数据中提取特定位，清零特定位。
+
     
-    /**
-     * @dev Get detailed proposal information
-     * Uses calldata for parameters and memory for return values
-     */
     function getProposal(uint8 proposalId) external view returns (
         bytes32 name,
         uint32 voteCount,
@@ -130,24 +91,33 @@ contract GasEfficientVoting {
         uint32 endTime,
         bool executed,
         bool active
+        //变量插入，一次性返回这些变量
     ) {
+        
         require(proposalId < proposalCount, "Invalid proposal");
         
         Proposal storage proposal = proposals[proposalId];
-        
-        return (
+
+          return (
             proposal.name,
             proposal.voteCount,
             proposal.startTime,
             proposal.endTime,
             proposal.executed,
             (block.timestamp >= proposal.startTime && block.timestamp <= proposal.endTime)
+            //标志这个活动是否已经结束
         );
     }
-    
-    /**
-     * @dev Convert string to bytes32 (helper for frontend integration)
-     * Note: This is a pure function that doesn't use state, so it's gas-efficient
-     */
-
 }
+
+
+
+        
+
+        
+
+
+
+
+
+
