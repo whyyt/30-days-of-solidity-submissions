@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+// 
 interface IERC721 {
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
@@ -89,7 +90,7 @@ contract SimpleNFT is IERC721 {
         require(_isApprovedOrOwner(msg.sender, tokenId), "Not authorized");
         _safeTransfer(from, to, tokenId, data);
     }
-
+    // 调用mint,建立nft
     function mint(address to, string memory uri) public {
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
@@ -139,3 +140,10 @@ contract SimpleNFT is IERC721 {
         return true;
     }
 }
+
+// day21
+// 1. 部署
+// 2. 用户调用mint函数构造NFT
+// 3. 系统自动生成tokenID，记录拥有者地址、余额和元数据，出发transfer事件
+// 4. 进入已拥有nft的状态
+// 5. 
