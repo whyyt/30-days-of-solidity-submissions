@@ -103,7 +103,7 @@ contract NFTMarketplace is ReentrancyGuard{
         Listing memory item = listings[nftAddress][tokenId];
         require(item.isListed, "Not listed");
         require(msg.value == item.price, "Incorrect ETH sent");
-        require(item.royaltyPercent + marketplaceFeePercent <= 1000, "Combined fees exceed 10%");
+        require(item.royaltyPercent + marketplaceFeePercent <= 10000, "Combined fees exceed 100%");
         uint256 feeAmount = (msg.value * marketplaceFeePercent)/10000;
         uint256 royaltyAmount = (msg.value * item.royaltyPercent)/10000;
         uint256 sellerAmount = msg.value - feeAmount - royaltyAmount;
