@@ -1,152 +1,95 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IERC20 {
-    function totalSupply() external view returns (uint256);
-    function balanceOf(address account) external view returns (uint256);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function allowance(address owner, address spender) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+contract DecentralizedEscrow {
     
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-}
-
-contract AutomatedMarketMaker {
-
-    address public tokenA;
-    address public tokenB;
-    uint256 public reserveA;
-    uint256 public reserveB;
-    uint256 public totalLiquidity;
-    mapping(address => uint256) public liquidity;
-
-    event LiquidityAdded(
-        address indexed provider, 
-        uint256 amountA, 
-        uint256 amountB, 
-        uint256 liquidityTokens
-    );
-    event LiquidityRemoved(
-        address indexed provider, 
-        uint256 amountA, 
-        uint256 amountB, 
-        uint256 liquidityTokens
-    );
-    event TokenSwapped(
-        address indexed user, 
-        address tokenIn, 
-        uint256 amountIn, 
-        address tokenOut, 
-        uint256 amountOut
-    );
-
-    constructor(address _tokenA, address _tokenB) {
-        require(_tokenA != address(0) && _tokenB != address(0), "Invalid token address");
-        require(_tokenA != _tokenB, "Tokens must be different");
-        
-        tokenA = _tokenA;
-        tokenB = _tokenB;
-    }
-    function addLiquidity(uint256 amountA, uint256 amountB) external {
-        require(amountA > 0 && amountB > 0, "Amounts must be positive");
-        IERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
-        IERC20(tokenB).transferFrom(msg.sender, address(this), amountB);
-        if (totalLiquidity == 0) {
-            reserveA = amountA;
-            reserveB = amountB;
-            totalLiquidity = sqrt(amountA * amountB); // 使用平方根计算初始流动性
-            liquidity[msg.sender] = totalLiquidity;
-        } 
-        else {
-            uint256 amountBOptimal = (amountA * reserveB) / reserveA;
-            require(amountB >= amountBOptimal, "Insufficient token B provided");
-            
-            if (amountB > amountBOptimal) {
-                uint256 excessB = amountB - amountBOptimal;
-                IERC20(tokenB).transfer(msg.sender, excessB);
-                amountB = amountBOptimal;
-            }
-            uint256 liquidityTokens = (amountA * totalLiquidity) / reserveA;
-            require(liquidityTokens > 0, "Insufficient liquidity");
-            reserveA += amountA;
-            reserveB += amountB;
-
-            liquidity[msg.sender] += liquidityTokens;
-            totalLiquidity += liquidityTokens;
-        }
-        
-        emit LiquidityAdded(msg.sender, amountA, amountB, liquidity[msg.sender]);
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETED, REFUNDED, DISPUTED }
+    State public currentState;
+    uint256 public constant TIMEOUT_DURATION = 30 days;
+    uint256 public timeout;
+    event FundsDeposited(uint256 amount);
+    event FundsReleased(uint256 amount);
+    event FundsRefunded(uint256 amount);
+    event DisputeResolved(address winner, uint256 amount);
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call");
+        _;
     }
 
-    function removeLiquidity(uint256 liquidityTokens) external {
-        require(liquidityTokens > 0, "Amount must be positive");
-        require(liquidity[msg.sender] >= liquidityTokens, "Insufficient liquidity");
-
-        uint256 amountA = (liquidityTokens * reserveA) / totalLiquidity;
-        uint256 amountB = (liquidityTokens * reserveB) / totalLiquidity;
-        reserveA -= amountA;
-        reserveB -= amountB;
-        
-        liquidity[msg.sender] -= liquidityTokens;
-        totalLiquidity -= liquidityTokens;
-        
-        IERC20(tokenA).transfer(msg.sender, amountA);
-        IERC20(tokenB).transfer(msg.sender, amountB);
-        
-        emit LiquidityRemoved(msg.sender, amountA, amountB, liquidityTokens);
-    }
-    
-    function swap(address tokenIn, uint256 amountIn) external returns (uint256 amountOut) {
-        require(tokenIn == tokenA || tokenIn == tokenB, "Invalid token");
-        require(amountIn > 0, "Amount must be positive");
-        bool isAToB = (tokenIn == tokenA);
-        address tokenOut = isAToB ? tokenB : tokenA;
-        uint256 reserveIn = isAToB ? reserveA : reserveB;
-        uint256 reserveOut = isAToB ? reserveB : reserveA;
-        uint256 amountInWithFee = amountIn * 997; 
-        amountOut = (amountInWithFee * reserveOut) / (reserveIn * 1000 + amountInWithFee);
-        require(amountOut > 0, "Insufficient output");
-        require(amountOut <= reserveOut, "Insufficient liquidity");
-        IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn);
-
-        if (isAToB) {
-            reserveA += amountIn;
-            reserveB -= amountOut;
-        } else {
-            reserveB += amountIn;
-            reserveA -= amountOut;
-        }
-        
-        IERC20(tokenOut).transfer(msg.sender, amountOut);
-        
-        emit TokenSwapped(msg.sender, tokenIn, amountIn, tokenOut, amountOut);
-        return amountOut;
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call");
+        _;
     }
 
-    function getPrice(address tokenIn, uint256 amountIn) public view returns (uint256) {
-        require(tokenIn == tokenA || tokenIn == tokenB, "Invalid token");
-        
-        bool isAToB = (tokenIn == tokenA);
-        uint256 reserveIn = isAToB ? reserveA : reserveB;
-        uint256 reserveOut = isAToB ? reserveB : reserveA;
-        
-        uint256 amountInWithFee = amountIn * 997;
-        return (amountInWithFee * reserveOut) / (reserveIn * 1000 + amountInWithFee);
+    modifier inState(State expectedState) {
+        require(currentState == expectedState, "Invalid state");
+        _;
     }
-    
-    function getReserves() external view returns (uint256, uint256) {
-        return (reserveA, reserveB);
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
     }
-    
-    function sqrt(uint256 x) private pure returns (uint256 y) {
-        if (x == 0) return 0;
-        uint256 z = (x + 1) / 2;
-        y = x;
-        while (z < y) {
-            y = z;
-            z = (x / z + z) / 2;
-        }
+
+    function deposit() external payable onlyBuyer inState(State.AWAITING_PAYMENT) {
+        require(msg.value > 0, "Must send ETH");
+        currentState = State.AWAITING_DELIVERY;
+        timeout = block.timestamp + TIMEOUT_DURATION; 
+        emit FundsDeposited(msg.value);
+    }
+
+    function confirmDelivery() external onlyBuyer inState(State.AWAITING_DELIVERY) {
+        currentState = State.COMPLETED;
+        payable(seller).transfer(address(this).balance);
+        emit FundsReleased(address(this).balance);
+    }
+
+    function requestRefund() external onlyBuyer inState(State.AWAITING_DELIVERY) {
+        require(block.timestamp < timeout, "Use timeoutRefund");
+        currentState = State.REFUNDED;
+        payable(buyer).transfer(address(this).balance);
+        emit FundsRefunded(address(this).balance);
+    }
+
+    function timeoutRefund() external inState(State.AWAITING_DELIVERY) {
+        require(block.timestamp >= timeout, "Timeout not reached");
+        currentState = State.REFUNDED;
+        payable(buyer).transfer(address(this).balance);
+        emit FundsRefunded(address(this).balance);
+    }
+
+    function raiseDispute() external {
+        require(
+            msg.sender == buyer || msg.sender == seller,
+            "Only buyer/seller"
+        );
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state");
+        currentState = State.DISPUTED;
+    }
+
+    function resolveDispute(
+        address payable winner, 
+        uint256 buyerAmount, 
+        uint256 sellerAmount
+    ) external onlyArbiter inState(State.DISPUTED) {
+        require(
+            buyerAmount + sellerAmount == address(this).balance,
+            "Invalid amounts"
+        );
+        
+        currentState = State.COMPLETED;
+        payable(buyer).transfer(buyerAmount);
+        payable(seller).transfer(sellerAmount);
+        
+        emit DisputeResolved(winner, winner == buyer ? buyerAmount : sellerAmount);
+    }
+
+    function getBalance() external view returns (uint256) {
+        return address(this).balance;
     }
 }
